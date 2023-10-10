@@ -1,0 +1,11 @@
+version: "1.0"
+services:
+  library:
+    build: ./library
+    container_name: library
+    environment:
+      - APP_HOST=${LIBRARY_APP_HOST}
+      - APP_PORT=${LIBRARY_APP_PORT}
+    ports:
+      - "${LIBRARY_APP_PORT}:${LIBRARY_APP_PORT}"
+    # network_mode: "host"
