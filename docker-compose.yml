@@ -6,13 +6,15 @@ services:
     container_name: library-db
     environment:
       - POSTGRES_USER=${LIBRARY_DB_USER}
-      - POSTGRES_DB=${LIBRARY_DB_DB}
+      - POSTGRES_DB=${LIBRARY_DB_NAME}
       - POSTGRES_PASSWORD=${LIBRARY_DB_PASSWORD}
+      - POSTGRES_PORT=${LIBRARY_DB_PORT}
     volumes:
       - ./library-db/library_data:/var/lib/postgresql/data
       - ./library-db/seed_data:/var/lib/postgresql/seed_data
     ports:
       - "${LIBRARY_DB_PORT}:${LIBRARY_DB_PORT}"
+    command: -p ${LIBRARY_DB_PORT}
 
   library:
     build: ./library
@@ -20,7 +22,13 @@ services:
     environment:
       - APP_HOST=${LIBRARY_APP_HOST}
       - APP_PORT=${LIBRARY_APP_PORT}
+      - DB_HOST=${LIBRARY_DB_HOST}
+      - DB_USERNAME=${LIBRARY_DB_USER}
+      - DB_NAME=${LIBRARY_DB_NAME}
+      - DB_PASSWORD=${LIBRARY_DB_PASSWORD}
+      - DB_PORT=${LIBRARY_DB_PORT}
     ports:
       - "${LIBRARY_APP_PORT}:${LIBRARY_APP_PORT}"
+    command: uvicorn main:app --reload --host ${LIBRARY_APP_HOST} --port ${LIBRARY_APP_PORT}
     depends_on:
       - library-db
