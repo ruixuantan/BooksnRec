@@ -32,3 +32,6 @@ CREATE TABLE Loans(
     FOREIGN KEY (reader_id) REFERENCES Readers(id),
     FOREIGN KEY (book_id) REFERENCES Books(id)
 );
+
+COPY Readers FROM '/var/lib/postgresql/seed_data/readers.csv' DELIMITER ',' CSV HEADER;
+COPY Books FROM '/var/lib/postgresql/seed_data/books.csv' DELIMITER ',' CSV HEADER;

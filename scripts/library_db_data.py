@@ -12,7 +12,7 @@ DOB_PRESENCE = 0.9
 BOOKS_DATA = "dataset/books.csv"
 
 
-def n_digit_rand(n):
+def n_digit_rand(n) -> int:
     range_start = 10 ** (n - 1)
     range_end = (10**n) - 1
     return random.randint(range_start, range_end)
@@ -23,7 +23,7 @@ def get_num_books() -> int:
         return len(f.readlines()) - 1
 
 
-def gen_books(output_file: str = "library-db/books.csv"):
+def gen_books(output_file: str = "library-db/seed_data/books.csv"):
     p = NUM_BOOKS / get_num_books()
     books = []
     id = 0
@@ -41,7 +41,7 @@ def gen_books(output_file: str = "library-db/books.csv"):
             writer.writerow(book)
 
 
-def gen_readers(output_file: str = "library-db/readers.csv"):
+def gen_readers(output_file: str = "library-db/seed_data/readers.csv"):
     f = Faker()
     with open(output_file, "w") as file:
         writer = csv.writer(file, delimiter=",")
