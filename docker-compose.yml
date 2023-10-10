@@ -1,9 +1,9 @@
 version: "1.0"
 services:
-  
+
   library-db:
     build: ./library-db
-    container_name: library-db 
+    container_name: library-db
     environment:
       - POSTGRES_USER=${LIBRARY_DB_USER}
       - POSTGRES_DB=${LIBRARY_DB_DB}

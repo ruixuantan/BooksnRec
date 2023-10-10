@@ -6,3 +6,4 @@ __pycache__/
 
 dataset/
 library-db/library-data/
+library-db/*.csv
