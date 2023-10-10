@@ -8,4 +8,3 @@ services:
       - APP_PORT=${LIBRARY_APP_PORT}
     ports:
       - "${LIBRARY_APP_PORT}:${LIBRARY_APP_PORT}"
-    # network_mode: "host"
