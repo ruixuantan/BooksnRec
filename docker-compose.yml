@@ -1,5 +1,18 @@
 version: "1.0"
 services:
+  
+  library-db:
+    build: ./library-db
+    container_name: library-db 
+    environment:
+      - POSTGRES_USER=${LIBRARY_DB_USER}
+      - POSTGRES_DB=${LIBRARY_DB_DB}
+      - POSTGRES_PASSWORD=${LIBRARY_DB_PASSWORD}
+    volumes:
+      - ./library-db/library-data:/var/lib/postgresql/data
+    ports:
+      - "${LIBRARY_DB_PORT}:${LIBRARY_DB_PORT}"
+
   library:
     build: ./library
     container_name: library
@@ -8,3 +21,5 @@ services:
       - APP_PORT=${LIBRARY_APP_PORT}
     ports:
       - "${LIBRARY_APP_PORT}:${LIBRARY_APP_PORT}"
+    depends_on:
+      - library-db
