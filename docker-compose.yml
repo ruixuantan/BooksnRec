@@ -13,7 +13,7 @@ services:
       - ./library-db/library_data:/var/lib/postgresql/data
       - ./library-db/seed_data:/var/lib/postgresql/seed_data
     ports:
-      - "${LIBRARY_DB_PORT}:${LIBRARY_DB_PORT}"
+      - ${LIBRARY_DB_PORT}:${LIBRARY_DB_PORT}
     command: -p ${LIBRARY_DB_PORT}
 
   library:
@@ -28,7 +28,22 @@ services:
       - DB_PASSWORD=${LIBRARY_DB_PASSWORD}
       - DB_PORT=${LIBRARY_DB_PORT}
     ports:
-      - "${LIBRARY_APP_PORT}:${LIBRARY_APP_PORT}"
+      - ${LIBRARY_APP_PORT}:${LIBRARY_APP_PORT}
     command: uvicorn main:app --reload --host ${LIBRARY_APP_HOST} --port ${LIBRARY_APP_PORT}
     depends_on:
       - library-db
+
+  minio:
+    build: ./minio
+    container_name: minio
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_RAW_BUCKET=${MINIO_RAW_BUCKET}
+      - MINIO_STAGE_BUCKET=${MINIO_STAGE_BUCKET}
+      - MINIO_SCRIPTS_BUCKET=${MINIO_SCRIPTS_BUCKET}
+    volumes:
+      - ./minio/data:/data
+    ports:
+      - ${MINIO_PORT}:${MINIO_PORT}
+    command: server /data
