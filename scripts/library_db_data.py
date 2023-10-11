@@ -1,4 +1,5 @@
 import csv
+import os
 import random
 import uuid
 
@@ -8,8 +9,21 @@ NUM_BOOKS = 1000
 NUM_READERS = 200
 GENDER_SKEW = 0.5
 DOB_PRESENCE = 0.9
+MAX_BOOK_COPIES = 5
+BOOK_COPY_P = 0.9
 
 BOOKS_DATA = "dataset/books.csv"
+SEED_BOOKS_FILE = os.path.join("library-db", "seed_data", "books.csv")
+SEED_READERS_FILE = os.path.join("library-db", "seed_data", "readers.csv")
+
+
+def get_num_geom_failures(p: float, maximum: int) -> int:
+    n = 1
+    counter = 0
+    while random.uniform(0, 1) > p and counter <= maximum:
+        n += 1
+        counter += 1
+    return n
 
 
 def n_digit_rand(n) -> int:
@@ -23,25 +37,29 @@ def get_num_books() -> int:
         return len(f.readlines()) - 1
 
 
-def gen_books(output_file: str = "library-db/seed_data/books.csv"):
+def gen_books(output_file: str = SEED_BOOKS_FILE):
     p = NUM_BOOKS / get_num_books()
     books = []
-    id = 0
     with open(BOOKS_DATA, "r") as f:
         book_file = csv.DictReader(f, delimiter=",")
         for book in book_file:
             if random.uniform(0, 1) < p:
-                books.append((id, book["title"], book["isbn"], book["isbn13"]))
-                id += 1
+                copies = get_num_geom_failures(BOOK_COPY_P, MAX_BOOK_COPIES)
+                for _ in range(copies):
+                    books.append([book["title"], book["isbn"], book["isbn13"]])
 
+    random.shuffle(books)
+    id = 0
     with open(output_file, "w") as f:
         writer = csv.writer(f, delimiter=",")
         writer.writerow(["id", "title", "isbn", "isbn13"])
         for book in books:
-            writer.writerow(book)
+            row = [id] + book
+            writer.writerow(row)
+            id += 1
 
 
-def gen_readers(output_file: str = "library-db/seed_data/readers.csv"):
+def gen_readers(output_file: str = SEED_READERS_FILE):
     f = Faker()
     with open(output_file, "w") as file:
         writer = csv.writer(file, delimiter=",")

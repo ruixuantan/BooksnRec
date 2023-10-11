@@ -56,15 +56,35 @@ async def get_reader_ids():
         return {"readers": readers}
 
 
+@app.get("/books")
+async def get_book_ids():
+    with Database() as db:
+        db.cursor.execute("SELECT id FROM Books")
+        books = db.cursor.fetchall()
+        books = [id for row in books for id in row]
+        return {"books": books}
+
+
 @app.post("/loans")
 async def create_loan(loan: LoanCreate):
+    reserve_date = f"'{loan.reserve_date}'" if loan.reserve_date else "NULL"
+    loan_date = f"'{loan.loan_date}'" if loan.loan_date else "NULL"
+    return_date = f"'{loan.return_date}'" if loan.return_date else "NULL"
     with Database() as db:
         db.cursor.execute(
             f"""
-            INSERT INTO Loans (id, reader_id, book_id, reserve_date, loan_date, return_date)
-            VALUES (default, {loan.reader_id}, {loan.book_id}, {loan.reserve_date}, {loan.loan_date}, {loan.return_date})
+            INSERT INTO Loans (id, reader_id, book_id, reserve_date, loan_date, return_date, updated_on)
+            VALUES (default, '{loan.reader_id}', {loan.book_id}, {reserve_date}, {loan_date}, {return_date}, default)
         """
         )
+        db.connection.commit()
+        return {"status": "ok"}
+
+
+@app.delete("/loans")
+async def delete_loans():
+    with Database() as db:
+        db.cursor.execute("DELETE FROM Loans")
         db.connection.commit()
         return {"status": "ok"}
 

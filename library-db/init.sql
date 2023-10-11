@@ -29,6 +29,7 @@ CREATE TABLE Loans(
     reserve_date DATE,
     loan_date DATE,
     return_date DATE,
+    updated_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (reader_id) REFERENCES Readers(id),
     FOREIGN KEY (book_id) REFERENCES Books(id)
 );
