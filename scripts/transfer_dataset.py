@@ -11,6 +11,7 @@ MINIO_URL = f"localhost:{os.getenv('MINIO_PORT')}"
 ACCESS_KEY = os.getenv("MINIO_ROOT_USER")
 SECRET_KEY = os.getenv("MINIO_ROOT_PASSWORD")
 BUCKET = os.getenv("MINIO_RAW_BUCKET")
+SECURE = True if os.getenv("MINIO_SECURE") == "1" else False
 
 
 def upload():

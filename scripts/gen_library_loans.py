@@ -2,6 +2,7 @@ import asyncio
 import json
 import os
 import random
+import time
 from dataclasses import dataclass
 
 import aiohttp
@@ -14,7 +15,7 @@ load_dotenv()
 URL = f"http://localhost:{os.getenv('LIBRARY_APP_PORT')}/"
 RESERVE_DATE_P = 0.1
 LOAN_DATE_P = 0.8
-NUM_LOANS = 100
+NUM_LOANS = 1000
 
 
 @dataclass
@@ -81,6 +82,7 @@ async def make_loans(loan_generator: LoanGenerator):
         post_tasks = []
         async for _ in async_loop(NUM_LOANS):
             loan = loan_generator.gen_loan()
+            time.sleep(0.1)
             post_tasks.append(do_post(session, loan))
         await asyncio.gather(*post_tasks)
 

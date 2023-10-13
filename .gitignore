@@ -14,5 +14,6 @@ airflow/plugins
 airflow/airflow.cfg
 airflow/airflow.db
 airflow/webserver_config.py
+*.pid
 
 clickhouse/data

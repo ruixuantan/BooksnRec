@@ -5,12 +5,12 @@ import uuid
 
 from faker import Faker
 
-NUM_BOOKS = 1000
-NUM_READERS = 200
+NUM_BOOKS = 8000
+NUM_READERS = 1000
 GENDER_SKEW = 0.5
 DOB_PRESENCE = 0.9
 MAX_BOOK_COPIES = 5
-BOOK_COPY_P = 0.9
+BOOK_COPY_P = 0.95
 
 BOOKS_DATA = os.path.join("dataset", "books.csv")
 SEED_BOOKS_FILE = os.path.join("library-db", "seed_data", "books.csv")
