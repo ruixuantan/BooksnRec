@@ -26,7 +26,7 @@ def upload():
     client.fput_object(
         bucket_name=BUCKET,
         object_name="books.csv",
-        file_path="dataset/books.csv",
+        file_path=os.path.join("dataset", "books.csv"),
     )
 
 

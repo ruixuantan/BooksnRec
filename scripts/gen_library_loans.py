@@ -1,13 +1,17 @@
 import asyncio
 import json
+import os
 import random
 from dataclasses import dataclass
 
 import aiohttp
 import requests
+from dotenv import load_dotenv
 from faker import Faker
 
-URL = "http://localhost:8000/"
+load_dotenv()
+
+URL = f"http://localhost:{os.getenv('LIBRARY_APP_PORT')}/"
 RESERVE_DATE_P = 0.1
 LOAN_DATE_P = 0.8
 NUM_LOANS = 100

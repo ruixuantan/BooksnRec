@@ -12,7 +12,7 @@ DOB_PRESENCE = 0.9
 MAX_BOOK_COPIES = 5
 BOOK_COPY_P = 0.9
 
-BOOKS_DATA = "dataset/books.csv"
+BOOKS_DATA = os.path.join("dataset", "books.csv")
 SEED_BOOKS_FILE = os.path.join("library-db", "seed_data", "books.csv")
 SEED_READERS_FILE = os.path.join("library-db", "seed_data", "readers.csv")
 
