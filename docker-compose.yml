@@ -152,4 +152,16 @@ services:
       - ./minio/data:/data
     ports:
       - ${MINIO_PORT}:${MINIO_PORT}
-    command: server /data
+
+  clickhouse:
+    build: ./clickhouse
+    container_name: clickhouse
+    environment:
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+      - CLICKHOUSE_DB=${CLICKHOUSE_DB}
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+    volumes:
+      - ./clickhouse/data:/var/lib/clickhouse
+    ports:
+      - ${CLICKHOUSE_PORT}:${CLICKHOUSE_PORT}
