@@ -9,6 +9,7 @@ library-db/library_data/
 library-db/seed_data/*.csv
 minio/data
 
+airflow/config
 airflow/logs
 airflow/plugins
 airflow/airflow.cfg

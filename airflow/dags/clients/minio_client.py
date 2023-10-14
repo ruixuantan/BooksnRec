@@ -27,6 +27,13 @@ class MinioClient:
             file_path=file_path,
         )
 
+    def upload_file(self, bucket_name: str, object_name: str, file_path: str):
+        self.client.fput_object(
+            bucket_name=bucket_name,
+            object_name=object_name,
+            file_path=file_path,
+        )
+
 
 MINIO = MinioClient(
     f"{os.getenv('MINIO_HOST')}:{os.getenv('MINIO_PORT')}",

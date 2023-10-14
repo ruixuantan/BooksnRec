@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS dim_books (
     B_TEXT_REVIEWS Nullable(UInt16),
     B_PUBLISH_DATE Nullable(Date),
     B_PUBLISHER Nullable(String)
-) ENGINE = MergeTree() ORDER BY (B_ID);
+) ENGINE = MergeTree() ORDER BY (B_ISBN10);
 
 CREATE TABLE IF NOT EXISTS dim_authors (
     A_ID UInt32,
@@ -39,5 +39,5 @@ CREATE TABLE IF NOT EXISTS dim_loans (
 CREATE TABLE IF NOT EXISTS fact_reader_metrics (
     RM_LOAN_ID UInt32,
     RM_READER_ID UUID,
-    RM_BOOK_ID UInt32
+    RM_BOOK_ISBN10 FixedString(10),
 ) ENGINE = MergeTree() ORDER BY (RM_LOAN_ID);
