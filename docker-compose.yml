@@ -166,3 +166,11 @@ services:
       - ./clickhouse/data:/var/lib/clickhouse
     ports:
       - ${CLICKHOUSE_PORT}:${CLICKHOUSE_PORT}
+
+  superset:
+    build: ./metabase
+    container_name: metabase
+    ports:
+      - ${METABASE_PORT}:${METABASE_PORT}
+    depends_on:
+      - clickhouse
