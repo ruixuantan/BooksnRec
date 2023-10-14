@@ -1,18 +1,20 @@
 from datetime import datetime
 
-from insert_raw_books_data_h import (
-    download_raw_books_data,
-    insert_authors_to_clickhouse,
-    insert_books_to_clickhouse,
-)
-from minio_client import MINIO
+from clients.clickhouse_client import CLICKHOUSE
+from clients.minio_client import MINIO
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
-from clickhouse import CLICKHOUSE
+from scripts.python.insert_raw_books_data import (
+    write_authors_written_csv_file,
+    write_books_csv_file,
+)
 
 BOOKS_FILE_PATH = "/tmp/books.csv"
+PARSED_BOOKS_FILE_PATH = "/tmp/parsed_books.csv"
+AUTHORS_FILE_PATH = "/tmp/authors.csv"
+WRITTEN_FILE_PATH = "/tmp/written.csv"
 
 
 with DAG(
@@ -29,38 +31,73 @@ with DAG(
     schedule_interval=None,
     start_date=datetime(2023, 1, 1),
 ) as dag:
-    t1 = PythonOperator(
+    download_raw_data = PythonOperator(
         task_id="download_raw_books_data",
-        python_callable=download_raw_books_data,
+        python_callable=MINIO.download_file,
         op_kwargs={
-            "minio_client": MINIO,
             "bucket_name": "raw",
             "object_name": "books.csv",
             "file_path": BOOKS_FILE_PATH,
         },
     )
 
-    t2 = PythonOperator(
-        task_id="insert_books_data_to_clickhouse",
-        python_callable=insert_books_to_clickhouse,
+    write_books_csv = PythonOperator(
+        task_id="write_books_csv_file",
+        python_callable=write_books_csv_file,
         op_kwargs={
             "file_path": BOOKS_FILE_PATH,
-            "clickhouse": CLICKHOUSE,
+            "outfile_path": PARSED_BOOKS_FILE_PATH,
         },
     )
 
-    t3 = PythonOperator(
-        task_id="insert_authors_data_to_clickhouse",
-        python_callable=insert_authors_to_clickhouse,
+    write_authors_csv = PythonOperator(
+        task_id="write_authors_written_csv_file",
+        python_callable=write_authors_written_csv_file,
         op_kwargs={
             "file_path": BOOKS_FILE_PATH,
-            "clickhouse": CLICKHOUSE,
+            "authors_file": AUTHORS_FILE_PATH,
+            "written_file": WRITTEN_FILE_PATH,
         },
     )
 
-    t4 = BashOperator(
-        task_id="remove_raw_books_data",
-        bash_command=f"rm {BOOKS_FILE_PATH}",
+    upload_books_csv = PythonOperator(
+        task_id="upload_parsed_books_data",
+        python_callable=CLICKHOUSE.upload_csv_file,
+        op_kwargs={
+            "table": "dim_books",
+            "file_path": PARSED_BOOKS_FILE_PATH,
+        },
     )
 
-    t1 >> [t2, t3] >> t4
+    upload_authors_csv = PythonOperator(
+        task_id="upload_authors_data",
+        python_callable=CLICKHOUSE.upload_csv_file,
+        op_kwargs={
+            "table": "dim_authors",
+            "file_path": AUTHORS_FILE_PATH,
+        },
+    )
+
+    upload_written_csv = PythonOperator(
+        task_id="upload_written_data",
+        python_callable=CLICKHOUSE.upload_csv_file,
+        op_kwargs={
+            "table": "dim_written",
+            "file_path": WRITTEN_FILE_PATH,
+        },
+    )
+
+    remove_files = BashOperator(
+        task_id="remove_files",
+        bash_command=f"rm {BOOKS_FILE_PATH} {PARSED_BOOKS_FILE_PATH} {AUTHORS_FILE_PATH} {WRITTEN_FILE_PATH}",
+        trigger_rule="all_success",
+    )
+
+    download_raw_data >> write_books_csv >> upload_books_csv >> remove_files
+    (
+        download_raw_data
+        >> write_authors_csv
+        >> upload_authors_csv
+        >> upload_written_csv
+        >> remove_files
+    )

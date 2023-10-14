@@ -2,6 +2,7 @@ import os
 
 import clickhouse_connect
 from clickhouse_connect.driver.client import Client
+from clickhouse_connect.driver.tools import insert_file
 
 
 class Clickhouse:
@@ -23,6 +24,9 @@ class Clickhouse:
 
     def run(self, sql_stmt: str):
         self.client.command(sql_stmt)
+
+    def upload_csv_file(self, table: str, file_path: str):
+        insert_file(self.client, table, file_path)
 
 
 CLICKHOUSE = Clickhouse(
