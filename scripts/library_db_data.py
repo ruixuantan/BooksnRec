@@ -2,6 +2,7 @@ import csv
 import os
 import random
 import uuid
+from datetime import datetime
 
 from faker import Faker
 
@@ -90,10 +91,7 @@ def gen_readers(output_file: str = SEED_READERS_FILE):
                 if random.uniform(0, 1) < DOB_PRESENCE
                 else None
             )
-            registered_on = (
-                f.date_between() if dob is None else f.date_between(dob, "today")
-            )
-
+            registered_on = datetime.now().strftime("%Y-%m-%d")
             writer.writerow(
                 [id, card_no, name, mobile_no, email, gender, dob, registered_on]
             )

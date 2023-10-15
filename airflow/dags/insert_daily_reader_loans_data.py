@@ -45,7 +45,7 @@ with DAG(
         python_callable=MINIO.upload_file,
         op_kwargs={
             "bucket_name": "stage",
-            "object_name": "stage/readers/{{ ds }}/readers.csv",
+            "object_name": "readers/{{ ds }}/readers.csv",
             "file_path": READERS_FILE_PATH,
         },
     )
@@ -55,7 +55,7 @@ with DAG(
         python_callable=MINIO.upload_file,
         op_kwargs={
             "bucket_name": "stage",
-            "object_name": "stage/loans/{{ ds }}/loans.csv",
+            "object_name": "loans/{{ ds }}/loans.csv",
             "file_path": LOANS_FILE_PATH,
         },
     )
@@ -65,7 +65,7 @@ with DAG(
         python_callable=MINIO.upload_file,
         op_kwargs={
             "bucket_name": "stage",
-            "object_name": "stage/reader_metrics/{{ ds }}/reader_metrics.csv",
+            "object_name": "reader_metrics/{{ ds }}/reader_metrics.csv",
             "file_path": READER_METRICS_FILE_PATH,
         },
     )
