@@ -1,4 +1,9 @@
 # Books and Rec
+A data engineering project.
+
+## Architecture
+![Architecture](./images/architecture_diagram.png)
+
 
 ## Setting up
 1. Create a folder `dataset` in the root directory
