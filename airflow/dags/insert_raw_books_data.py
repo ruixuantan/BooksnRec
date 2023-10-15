@@ -60,8 +60,18 @@ with DAG(
         },
     )
 
-    upload_books_csv = PythonOperator(
-        task_id="upload_parsed_books_data",
+    upload_books_csv_to_minio = PythonOperator(
+        task_id="upload_parsed_books_data_to_minio",
+        python_callable=MINIO.upload_file,
+        op_kwargs={
+            "bucket_name": "stage",
+            "object_name": "stage/books/{{ ds }}/books.csv",
+            "file_path": PARSED_BOOKS_FILE_PATH,
+        },
+    )
+
+    upload_books_csv_to_clickhouse = PythonOperator(
+        task_id="upload_parsed_books_data_to_clickhouse",
         python_callable=CLICKHOUSE.upload_csv_file,
         op_kwargs={
             "table": "dim_books",
@@ -69,8 +79,18 @@ with DAG(
         },
     )
 
-    upload_authors_csv = PythonOperator(
-        task_id="upload_authors_data",
+    upload_authors_csv_to_minio = PythonOperator(
+        task_id="upload_authors_data_to_minio",
+        python_callable=MINIO.upload_file,
+        op_kwargs={
+            "bucket_name": "stage",
+            "object_name": "stage/authors/{{ ds }}/authors.csv",
+            "file_path": AUTHORS_FILE_PATH,
+        },
+    )
+
+    upload_authors_csv_to_clickhouse = PythonOperator(
+        task_id="upload_authors_data_to_clickhouse",
         python_callable=CLICKHOUSE.upload_csv_file,
         op_kwargs={
             "table": "dim_authors",
@@ -78,8 +98,18 @@ with DAG(
         },
     )
 
-    upload_written_csv = PythonOperator(
-        task_id="upload_written_data",
+    upload_written_csv_to_minio = PythonOperator(
+        task_id="upload_written_data_to_minio",
+        python_callable=MINIO.upload_file,
+        op_kwargs={
+            "bucket_name": "stage",
+            "object_name": "stage/written/{{ ds }}/written.csv",
+            "file_path": WRITTEN_FILE_PATH,
+        },
+    )
+
+    upload_written_csv_to_clickhouse = PythonOperator(
+        task_id="upload_written_data_to_clickhouse",
         python_callable=CLICKHOUSE.upload_csv_file,
         op_kwargs={
             "table": "dim_written",
@@ -93,11 +123,23 @@ with DAG(
         trigger_rule="all_success",
     )
 
-    download_raw_data >> write_books_csv >> upload_books_csv >> remove_files
     (
         download_raw_data
-        >> write_authors_csv
-        >> upload_authors_csv
-        >> upload_written_csv
+        >> write_books_csv
+        >> upload_books_csv_to_minio
+        >> upload_books_csv_to_clickhouse
+        >> remove_files
+    )
+    download_raw_data >> write_authors_csv
+    (
+        write_authors_csv
+        >> upload_authors_csv_to_minio
+        >> upload_authors_csv_to_clickhouse
+        >> remove_files
+    )
+    (
+        write_authors_csv
+        >> upload_written_csv_to_minio
+        >> upload_written_csv_to_clickhouse
         >> remove_files
     )
