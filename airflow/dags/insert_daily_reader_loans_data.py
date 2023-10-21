@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
-from clients.clickhouse_client import CLICKHOUSE
-from clients.minio_client import MINIO
+from clients.clickhouse_client import Clickhouse
+from clients.minio_client import MinioClient as Minio
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
@@ -42,7 +42,7 @@ with DAG(
 
     upload_readers_data_to_minio = PythonOperator(
         task_id="upload_readers_data_to_minio",
-        python_callable=MINIO.upload_file,
+        python_callable=Minio.upload_file,
         op_kwargs={
             "bucket_name": "stage",
             "object_name": "readers/{{ ds }}/readers.csv",
@@ -52,7 +52,7 @@ with DAG(
 
     upload_loans_data_to_minio = PythonOperator(
         task_id="upload_loans_data_to_minio",
-        python_callable=MINIO.upload_file,
+        python_callable=Minio.upload_file,
         op_kwargs={
             "bucket_name": "stage",
             "object_name": "loans/{{ ds }}/loans.csv",
@@ -62,7 +62,7 @@ with DAG(
 
     upload_reader_metrics_data_to_minio = PythonOperator(
         task_id="upload_reader_metrics_data_to_minio",
-        python_callable=MINIO.upload_file,
+        python_callable=Minio.upload_file,
         op_kwargs={
             "bucket_name": "stage",
             "object_name": "reader_metrics/{{ ds }}/reader_metrics.csv",
@@ -72,7 +72,7 @@ with DAG(
 
     upload_readers_data_to_clickhouse = PythonOperator(
         task_id="upload_readers_data_to_clickhouse",
-        python_callable=CLICKHOUSE.upload_csv_file,
+        python_callable=Clickhouse.upload_csv_file,
         op_kwargs={
             "table": "dim_readers",
             "file_path": READERS_FILE_PATH,
@@ -81,7 +81,7 @@ with DAG(
 
     upload_loans_data_to_clickhouse = PythonOperator(
         task_id="upload_loans_data_to_clickhouse",
-        python_callable=CLICKHOUSE.upload_csv_file,
+        python_callable=Clickhouse.upload_csv_file,
         op_kwargs={
             "table": "dim_loans",
             "file_path": LOANS_FILE_PATH,
@@ -90,7 +90,7 @@ with DAG(
 
     upload_reader_metrics_data_to_clickhouse = PythonOperator(
         task_id="upload_reader_metrics_data_to_clickhouse",
-        python_callable=CLICKHOUSE.upload_csv_file,
+        python_callable=Clickhouse.upload_csv_file,
         op_kwargs={
             "table": "fact_reader_metrics",
             "file_path": READER_METRICS_FILE_PATH,

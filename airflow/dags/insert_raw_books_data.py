@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from clients.clickhouse_client import CLICKHOUSE
-from clients.minio_client import MINIO
+from clients.clickhouse_client import Clickhouse
+from clients.minio_client import MinioClient as Minio
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
@@ -33,7 +33,7 @@ with DAG(
 ) as dag:
     download_raw_data = PythonOperator(
         task_id="download_raw_books_data",
-        python_callable=MINIO.download_file,
+        python_callable=Minio.download_file,
         op_kwargs={
             "bucket_name": "raw",
             "object_name": "books.csv",
@@ -62,7 +62,7 @@ with DAG(
 
     upload_books_csv_to_minio = PythonOperator(
         task_id="upload_parsed_books_data_to_minio",
-        python_callable=MINIO.upload_file,
+        python_callable=Minio.upload_file,
         op_kwargs={
             "bucket_name": "stage",
             "object_name": "books/{{ ds }}/books.csv",
@@ -72,7 +72,7 @@ with DAG(
 
     upload_books_csv_to_clickhouse = PythonOperator(
         task_id="upload_parsed_books_data_to_clickhouse",
-        python_callable=CLICKHOUSE.upload_csv_file,
+        python_callable=Clickhouse.upload_csv_file,
         op_kwargs={
             "table": "dim_books",
             "file_path": PARSED_BOOKS_FILE_PATH,
@@ -81,7 +81,7 @@ with DAG(
 
     upload_authors_csv_to_minio = PythonOperator(
         task_id="upload_authors_data_to_minio",
-        python_callable=MINIO.upload_file,
+        python_callable=Minio.upload_file,
         op_kwargs={
             "bucket_name": "stage",
             "object_name": "authors/{{ ds }}/authors.csv",
@@ -91,7 +91,7 @@ with DAG(
 
     upload_authors_csv_to_clickhouse = PythonOperator(
         task_id="upload_authors_data_to_clickhouse",
-        python_callable=CLICKHOUSE.upload_csv_file,
+        python_callable=Clickhouse.upload_csv_file,
         op_kwargs={
             "table": "dim_authors",
             "file_path": AUTHORS_FILE_PATH,
@@ -100,7 +100,7 @@ with DAG(
 
     upload_written_csv_to_minio = PythonOperator(
         task_id="upload_written_data_to_minio",
-        python_callable=MINIO.upload_file,
+        python_callable=Minio.upload_file,
         op_kwargs={
             "bucket_name": "stage",
             "object_name": "written/{{ ds }}/written.csv",
@@ -110,7 +110,7 @@ with DAG(
 
     upload_written_csv_to_clickhouse = PythonOperator(
         task_id="upload_written_data_to_clickhouse",
-        python_callable=CLICKHOUSE.upload_csv_file,
+        python_callable=Clickhouse.upload_csv_file,
         op_kwargs={
             "table": "dim_written",
             "file_path": WRITTEN_FILE_PATH,

@@ -3,13 +3,13 @@ from airflow.hooks.postgres_hook import PostgresHook
 
 def _get_data(header: str, sql: str, outfile: str):
     pg_hook = PostgresHook(postgres_conn_id="library-db")
-    pg_conn = pg_hook.get_conn()
-    cursor = pg_conn.cursor()
-    cursor.execute(sql)
-    with open(outfile, "w") as f:
-        f.write(header)
-        for row in cursor.fetchall():
-            f.write(",".join([str(x) if x else r"\N" for x in row]) + "\n")
+    with pg_hook.get_conn() as pg_conn:
+        with pg_conn.cursor() as cursor:
+            cursor.execute(sql)
+            with open(outfile, "w") as f:
+                f.write(header)
+                for row in cursor.fetchall():
+                    f.write(",".join([str(x) if x else r"\N" for x in row]) + "\n")
 
 
 def _get_reader_data(start_date: str, end_date: str, outfile: str):
