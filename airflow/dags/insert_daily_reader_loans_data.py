@@ -33,7 +33,7 @@ with DAG(
         python_callable=unload_loans_readers,
         op_kwargs={
             "start_date": (datetime.now() - timedelta(1)).strftime(DATE_FORMAT),
-            "end_date": datetime.now().strftime(DATE_FORMAT),
+            "end_date": (datetime.now() + timedelta(1)).strftime(DATE_FORMAT),
             "readers_file": READERS_FILE_PATH,
             "loans_file": LOANS_FILE_PATH,
             "reader_metrics_file": READER_METRICS_FILE_PATH,

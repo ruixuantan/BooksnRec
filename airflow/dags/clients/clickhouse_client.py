@@ -19,6 +19,8 @@ class Clickhouse:
         self.user = user
         self.password = password
         self.db = db
+        self.host = host
+        self.port = port
 
     def __enter__(self):
         self.client = clickhouse_connect.get_client(
